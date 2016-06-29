@@ -122,21 +122,47 @@ class Amqp extends Component
      * @param string $exchange
      * @param string $routing_key
      * @param string|array $message
+     * @param null $headers
      * @param string $type Use self::TYPE_DIRECT if it is an answer
-     * @return void
      */
     public function send($exchange, $routing_key, $message, $headers = null, $type = self::TYPE_TOPIC)
     {
         $properties = [];
-        if ($headers !== null) {
-            $properties['application_headers'] = $headers;
+        $this->applyPropertyHeaders($properties, $headers);
+
+        if ($type === self::TYPE_TOPIC) {
+            $this->channel->exchange_declare($exchange, $type, false, true, false);
         }
 
         $message = $this->prepareMessage($message, $properties);
-        if ($type == self::TYPE_TOPIC) {
+        $this->channel->basic_publish($message, $exchange, $routing_key);
+    }
+
+    /**
+     * Sends message to the exchange.
+     *
+     * @param string $exchange
+     * @param string $routing_key
+     * @param array $messageArray
+     * @param null $headers
+     * @param string $type Use self::TYPE_DIRECT if it is an answer
+     * @internal param array|string $message
+     * @throws \yii\base\Exception
+     */
+    public function batchSend($exchange, $routing_key, array $messageArray, $headers = null, $type = self::TYPE_TOPIC)
+    {
+        $properties = [];
+        $this->applyPropertyHeaders($properties, $headers);
+
+        if ($type === self::TYPE_TOPIC) {
             $this->channel->exchange_declare($exchange, $type, false, true, false);
         }
-        $this->channel->basic_publish($message, $exchange, $routing_key);
+
+        foreach ($messageArray as $message) {
+            $message = $this->prepareMessage($message, $properties);
+            $this->channel->batch_basic_publish($message, $exchange, $routing_key);
+        }
+        $this->channel->publish_batch();
     }
 
     /**
@@ -185,7 +211,7 @@ class Amqp extends Component
         $queueName = $queue;
         if (!$queueName) {
             list ($queueName) = $this->channel->queue_declare();
-            if ($type == Amqp::TYPE_DIRECT) {
+            if ($type === self::TYPE_DIRECT) {
                 $this->channel->exchange_declare($exchange, $type, false, true, false);
             }
         }
@@ -240,5 +266,18 @@ class Amqp extends Component
         }
 
         return new AMQPMessage($message, $properties);
+    }
+
+    /**
+     * Applies headers in message properties.
+     *
+     * @param $properties
+     * @param $headers
+     */
+    public function applyPropertyHeaders(&$properties, $headers)
+    {
+        if ($headers !== null) {
+            $properties['application_headers'] = $headers;
+        }
     }
 }
