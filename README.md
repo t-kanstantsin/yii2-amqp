@@ -1,7 +1,7 @@
 yii2-amqp
 =========
 
-AMQP extension wrapper to communicate with RabbitMQ server. Based on [php-amqplib/php-amqplib](https://github.com/php-amqplib/php-amqplib).
+AMQP extension wrapper to communicate with RabbitMQ server. Based on [videlalvaro/php-amqplib](https://github.com/videlalvaro/php-amqplib).
 
 ## Installation
 
@@ -102,6 +102,13 @@ $ php yii rabbit my_routing_key direct --exchange=my_exchange
 ```
 
 to listen direct messages on selected exchange.
+
+Run command
+```bash
+$ php yii rabbit --exchange=my_exchange --queue=queue1
+```
+
+to listen messages on selected exchange binding queue1 
 
 Also you can create controllers for your needs. Just use for your web controllers class
 `webtoucher\amqp\controllers\AmqpConsoleController` instead of `yii\web\Controller` and for your console controllers

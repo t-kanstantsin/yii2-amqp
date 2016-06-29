@@ -7,13 +7,12 @@
 
 namespace webtoucher\amqp\components;
 
-use yii\base\Component;
-use yii\base\Exception;
-use yii\helpers\Inflector;
-use yii\helpers\Json;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use yii\base\Component;
+use yii\base\Exception;
+use yii\helpers\Json;
 
 
 /**
@@ -67,6 +66,11 @@ class Amqp extends Component
     public $vhost = '/';
 
     /**
+     * @var boolean
+     */
+    public $consumeNoAck = true;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -108,6 +112,7 @@ class Amqp extends Component
         if (!array_key_exists($index, $this->channels)) {
             $this->channels[$index] = $this->connection->channel($channel_id);
         }
+
         return $this->channels[$index];
     }
 
@@ -120,9 +125,14 @@ class Amqp extends Component
      * @param string $type Use self::TYPE_DIRECT if it is an answer
      * @return void
      */
-    public function send($exchange, $routing_key, $message, $type = self::TYPE_TOPIC)
+    public function send($exchange, $routing_key, $message, $headers = null, $type = self::TYPE_TOPIC)
     {
-        $message = $this->prepareMessage($message);
+        $properties = [];
+        if ($headers !== null) {
+            $properties['application_headers'] = $headers;
+        }
+
+        $message = $this->prepareMessage($message, $properties);
         if ($type == self::TYPE_TOPIC) {
             $this->channel->exchange_declare($exchange, $type, false, true, false);
         }
@@ -148,7 +158,7 @@ class Amqp extends Component
         $this->channel->queue_bind($queueName, $exchange, $queueName);
 
         $response = null;
-        $callback = function(AMQPMessage $answer) use ($message, &$response) {
+        $callback = function (AMQPMessage $answer) use ($message, &$response) {
             $response = $answer->body;
         };
 
@@ -158,6 +168,7 @@ class Amqp extends Component
             // exception will be thrown on timeout
             $this->channel->wait(null, false, $timeout);
         }
+
         return $response;
     }
 
@@ -169,17 +180,42 @@ class Amqp extends Component
      * @param callable $callback
      * @param string $type
      */
-    public function listen($exchange, $routing_key, $callback, $type = self::TYPE_TOPIC)
+    public function listen($exchange, $routing_key, $callback, $type = self::TYPE_TOPIC, $queue = '')
     {
-        list ($queueName) = $this->channel->queue_declare();
-        if ($type == Amqp::TYPE_DIRECT) {
-            $this->channel->exchange_declare($exchange, $type, false, true, false);
+        $queueName = $queue;
+        if (!$queueName) {
+            list ($queueName) = $this->channel->queue_declare();
+            if ($type == Amqp::TYPE_DIRECT) {
+                $this->channel->exchange_declare($exchange, $type, false, true, false);
+            }
         }
         $this->channel->queue_bind($queueName, $exchange, $routing_key);
-        $this->channel->basic_consume($queueName, '', false, true, false, false, $callback);
+        $this->channel->basic_consume($queueName, '', false, $this->consumeNoAck, false, false, $callback);
 
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
+        }
+
+        $this->channel->close();
+        $this->connection->close();
+    }
+
+    /**
+     * Listens the queue for messages.
+     *
+     * @param string $queueName
+     * @param callable $callback
+     */
+    public function listenQueue($queueName, $callback, $break = false)
+    {
+        while (true) {
+            if (($message = $this->channel->basic_get($queueName, $this->consumeNoAck)) instanceof AMQPMessage) {
+                call_user_func($callback, $message);
+            } else {
+                if ($break !== false) {
+                    break;
+                }
+            }
         }
 
         $this->channel->close();
@@ -202,6 +238,7 @@ class Amqp extends Component
         if (is_array($message) || is_object($message)) {
             $message = Json::encode($message);
         }
+
         return new AMQPMessage($message, $properties);
     }
 }

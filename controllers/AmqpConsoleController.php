@@ -28,7 +28,7 @@ abstract class AmqpConsoleController extends Controller
     {
         return array_merge(
             parent::options($actionId),
-            ['exchange']
+            ['exchange', 'queue', 'break']
         );
     }
 }
