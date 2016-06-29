@@ -1,5 +1,5 @@
 {
-    "name": "webtoucher/yii2-amqp",
+    "name": "t-kanstantsin/yii2-amqp",
     "description": "Yii 2 extension wrapper to communicate with RabbitMQ server via AMQP. Based on videlalvaro/php-amqplib.",
     "keywords": ["yii", "extension", "amqp", "RabbitMQ"],
     "homepage": "https://github.com/webtoucher/yii2-amqp",
@@ -11,8 +11,12 @@
             "email": "mirakuru@webtoucher.ru"
         }
     ],
+    "replace": {
+        "webtoucher/yii2-amqp":"*"
+    },
     "require": {
         "php": ">=5.3.0",
+        "yiisoft/yii2": ">=2.0.6",
         "php-amqplib/php-amqplib": "~2.0",
         "webtoucher/yii2-commands": "*"
     },
