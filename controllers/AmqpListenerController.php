@@ -41,7 +41,9 @@ class AmqpListenerController extends AmqpConsoleController
         $routingKey = $msg->get('routing_key');
         $method = 'read' . Inflector::camelize($routingKey);
 
-        $interpreter = isset($this->interpreters[$this->exchange]) ? $this->interpreters[$this->exchange] : (isset($this->interpreters['*']) ? $this->interpreters['*'] : null);
+        $interpreter = isset($this->interpreters[$this->exchange])
+            ? $this->interpreters[$this->exchange]
+            : (isset($this->interpreters['*']) ? $this->interpreters['*'] : null);
 
         if ($interpreter === null) {
             $interpreter = $this;
