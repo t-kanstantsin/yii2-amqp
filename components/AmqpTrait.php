@@ -7,11 +7,10 @@
 
 namespace webtoucher\amqp\components;
 
-use Yii;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
-use webtoucher\amqp\components\Amqp;
-use webtoucher\commands\Controller;
+use PhpAmqpLib\Message\AMQPMessage;
+use Yii;
 
 
 /**
@@ -58,9 +57,10 @@ trait AmqpTrait
      */
     public function getAmqp()
     {
-        if (empty($this->amqpContainer)) {
+        if ($this->amqpContainer === null) {
             $this->amqpContainer = Yii::$app->amqp;
         }
+
         return $this->amqpContainer;
     }
 
