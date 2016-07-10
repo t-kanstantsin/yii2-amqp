@@ -3,6 +3,8 @@ yii2-amqp
 
 AMQP extension wrapper to communicate with RabbitMQ server. Based on [videlalvaro/php-amqplib](https://github.com/videlalvaro/php-amqplib).
 
+This extension is reworked version of [webtoucher\amqp](https://github.com/webtoucher/yii2-amqp) extension
+
 ## Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
@@ -10,13 +12,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-$ php composer.phar require webtoucher/yii2-amqp "*"
+$ php composer.phar require t-kanstantsin/yii2-amqp "*"
 ```
 
 or add
 
 ```
-"webtoucher/yii2-amqp": "*"
+"t-kanstantsin/yii2-amqp": "*"
 ```
 
 to the ```require``` section of your `composer.json` file.
@@ -24,33 +26,27 @@ to the ```require``` section of your `composer.json` file.
 Add the following in your console config:
 
 ```php
+<?php
 return [
-    ...
     'components' => [
-        ...
         'amqp' => [
-            'class' => 'webtoucher\amqp\components\Amqp',
+            'class' => tkanstantsin\amqp\components\Amqp::class,
             'host' => '127.0.0.1',
             'port' => 5672,
             'user' => 'your_login',
             'password' => 'your_password',
             'vhost' => '/',
         ],
-        ...
     ],
-    ...
     'controllerMap' => [
-        ...
         'rabbit' => [
-            'class' => 'webtoucher\amqp\controllers\AmqpListenerController',
+            'class' => tkanstantsin\amqp\controllers\AmqpListenerController::class,
             'interpreters' => [
-                'my-exchange' => 'app\components\RabbitInterpreter', // interpreters for each exchange
+                'my-exchange' => app\components\RabbitInterpreter::class, // interpreters for each exchange
             ],
             'exchange' => 'my-exchange', // default exchange
         ],
-        ...
     ],
-    ...
 ];
 ```
 
@@ -58,11 +54,9 @@ Add messages interpreter class `@app/components/RabbitInterpreter` with your han
 
 ```php
 <?php
-
 namespace app\components;
 
-use webtoucher\amqp\components\AmqpInterpreter;
-
+use tkanstantsin\amqp\components\AmqpInterpreter;
 
 class RabbitInterpreter extends AmqpInterpreter
 {
@@ -111,6 +105,6 @@ $ php yii rabbit --exchange=my_exchange --queue=queue1
 to listen messages on selected exchange binding queue1 
 
 Also you can create controllers for your needs. Just use for your web controllers class
-`webtoucher\amqp\controllers\AmqpConsoleController` instead of `yii\web\Controller` and for your console controllers
-class `webtoucher\amqp\controllers\AmqpConsoleController` instead of `yii\console\Controller`. AMQP connection will be
+`tkanstantsin\amqp\controllers\AmqpConsoleController` instead of `yii\web\Controller` and for your console controllers
+class `tkanstantsin\amqp\controllers\AmqpConsoleController` instead of `yii\console\Controller`. AMQP connection will be
 available with property `connection`. AMQP channel will be available with property `channel`.

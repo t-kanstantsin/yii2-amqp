@@ -5,9 +5,9 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace webtoucher\amqp\controllers;
+namespace tkanstantsin\amqp\controllers;
 
-use webtoucher\amqp\components\AmqpTrait;
+use tkanstantsin\amqp\components\AmqpTrait;
 use webtoucher\commands\Controller;
 
 

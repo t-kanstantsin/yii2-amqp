@@ -5,11 +5,10 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace webtoucher\amqp\components;
+namespace tkanstantsin\amqp\components;
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Yii;
 
 
@@ -17,7 +16,7 @@ use Yii;
  * AMQP trait for controllers.
  *
  * @property Amqp $amqp AMQP object.
- * @property AMQPConnection $connection AMQP connection.
+ * @property AMQPStreamConnection $connection AMQP connection.
  * @property AMQPChannel $channel AMQP channel.
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
  * @since 2.0
@@ -67,7 +66,7 @@ trait AmqpTrait
     /**
      * Returns AMQP connection.
      *
-     * @return AMQPConnection
+     * @return AMQPStreamConnection
      */
     public function getConnection()
     {
@@ -83,33 +82,5 @@ trait AmqpTrait
     public function getChannel($channel_id = null)
     {
         return $this->amqp->getChannel($channel_id);
-    }
-
-    /**
-     * Sends message to the exchange.
-     *
-     * @param string $routing_key
-     * @param string|array|AMQPMessage $message
-     * @param string $exchange
-     * @param string $type
-     * @return void
-     */
-    public function send($routing_key, $message, $exchange = null, $type = Amqp::TYPE_TOPIC)
-    {
-        $this->amqp->send($exchange ?: $this->exchange, $routing_key, $message, $type);
-    }
-
-    /**
-     * Sends message to the exchange and waits for answer.
-     *
-     * @param string $routing_key
-     * @param string|array|AMQPMessage $message
-     * @param integer $timeout Timeout in seconds.
-     * @param string $exchange
-     * @return string
-     */
-    public function ask($routing_key, $message, $timeout = 10, $exchange = null)
-    {
-        return $this->amqp->ask($exchange ?: $this->exchange, $routing_key, $message, $timeout);
     }
 }
