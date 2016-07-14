@@ -11,8 +11,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use tkanstantsin\yii2\amqp\Amqp;
 use tkanstantsin\yii2\amqp\interpreter\Interpreter;
 use yii\base\InvalidConfigException;
-use yii\console\Exception;
-use yii\helpers\ArrayHelper;
+use yii\console\Controller;
 
 
 /**
@@ -22,8 +21,27 @@ use yii\helpers\ArrayHelper;
  * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  * @since 2.0
  */
-class ListenerController extends ConsoleController
+class ListenerController extends Controller
 {
+    /**
+     * Listened exchange.
+     *
+     * @var string
+     */
+    public $exchange = 'exchange';
+    /**
+     * bind queue.
+     *
+     * @var string
+     */
+    public $queue = '';
+    /**
+     * break listen
+     *
+     * @var boolean
+     */
+    public $break = false;
+
     /**
      * Amqp component
      * @var Amqp|string
@@ -44,6 +62,17 @@ class ListenerController extends ConsoleController
         if (!($this->amqp instanceof Amqp)) {
             throw new InvalidConfigException(sprintf('Amqp component MUST be defined and be instance of "%s".', Amqp::class));
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function options($actionId)
+    {
+        return array_merge(
+            parent::options($actionId),
+            ['exchange', 'queue', 'break']
+        );
     }
 
     public function actionRun()
