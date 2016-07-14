@@ -30,7 +30,7 @@ Add the following in your console config:
 return [
     'components' => [
         'amqp' => [
-            'class' => tkanstantsin\amqp\components\Amqp::class,
+            'class' => tkanstantsin\yii2\amqp\Amqp::class,
             'host' => '127.0.0.1',
             'port' => 5672,
             'user' => 'your_login',
@@ -40,7 +40,7 @@ return [
     ],
     'controllerMap' => [
         'rabbit' => [
-            'class' => tkanstantsin\amqp\controllers\AmqpListenerController::class,
+            'class' => tkanstantsin\yii2\amqp\controllers\ListenerController::class,
             'interpreters' => [
                 'my-exchange' => app\components\RabbitInterpreter::class, // interpreters for each exchange
             ],
@@ -56,9 +56,9 @@ Add messages interpreter class `@app/components/RabbitInterpreter` with your han
 <?php
 namespace app\components;
 
-use tkanstantsin\amqp\components\AmqpInterpreter;
+use tkanstantsin\yii2\amqp\interpreter\Interpreter;
 
-class RabbitInterpreter extends AmqpInterpreter
+class RabbitInterpreter extends Interpreter
 {
     /**
      * Interprets AMQP message with routing key 'hello_world'.
@@ -78,13 +78,13 @@ class RabbitInterpreter extends AmqpInterpreter
 Just run command
 
 ```bash
-$ php yii rabbit
+$ php yii rabbit/run
 ```
 
 to listen topics with any routing keys on default exchange or
 
 ```bash
-$ php yii rabbit my_routing_key
+$ php yii rabbit/run my_routing_key
 ```
 
 to listen topics with one routing key.
@@ -92,19 +92,19 @@ to listen topics with one routing key.
 Run command
 
 ```bash
-$ php yii rabbit my_routing_key direct --exchange=my_exchange
+$ php yii rabbit/run my_routing_key direct --exchange=my_exchange
 ```
 
 to listen direct messages on selected exchange.
 
 Run command
 ```bash
-$ php yii rabbit --exchange=my_exchange --queue=queue1
+$ php yii rabbit/run --exchange=my_exchange --queue=queue1
 ```
 
 to listen messages on selected exchange binding queue1 
 
 Also you can create controllers for your needs. Just use for your web controllers class
-`tkanstantsin\amqp\controllers\AmqpConsoleController` instead of `yii\web\Controller` and for your console controllers
-class `tkanstantsin\amqp\controllers\AmqpConsoleController` instead of `yii\console\Controller`. AMQP connection will be
+`tkanstantsin\yii2\amqp\controllers\AmqpConsoleController` instead of `yii\web\Controller` and for your console controllers
+class `tkanstantsin\yii2\amqp\controllers\AmqpConsoleController` instead of `yii\console\Controller`. AMQP connection will be
 available with property `connection`. AMQP channel will be available with property `channel`.
