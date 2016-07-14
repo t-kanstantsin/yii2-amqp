@@ -7,12 +7,12 @@
 
 namespace tkanstantsin\yii2\amqp\interpreter;
 
-use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
 use PhpAmqpLib\Message\AMQPMessage;
 use yii\base\Object;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use yii\helpers\Inflector;
+use yii\helpers\Json;
 
 
 /**

@@ -7,12 +7,12 @@
 
 namespace tkanstantsin\yii2\amqp;
 
-use yii\helpers\ArrayHelper;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use yii\base\Component;
 use yii\base\Exception;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
 
@@ -39,40 +39,29 @@ class Amqp extends Component
     protected static $ampqConnection;
 
     /**
-     * @var AMQPChannel[]
-     */
-    protected $channels = [];
-
-    /**
      * @var string
      */
     public $host = '127.0.0.1';
-
     /**
      * @var integer
      */
     public $port = 5672;
-
     /**
      * @var string
      */
     public $user;
-
     /**
      * @var string
      */
     public $password;
-
     /**
      * @var string
      */
     public $vhost = '/';
-
     /**
      * @var boolean
      */
     public $consumeNoAck = true;
-
     /**
      * Config of exchanges and queues
      * Format:
@@ -93,6 +82,11 @@ class Amqp extends Component
      * @var array
      */
     public $config;
+
+    /**
+     * @var AMQPChannel[]
+     */
+    protected $channels = [];
 
     /**
      * @inheritdoc
@@ -232,7 +226,7 @@ class Amqp extends Component
         call_user_func_array([$this->channel, 'basic_consume'], $this->getBasicConsumeArgs($exchange, $queue, $callback));
         call_user_func_array([$this->channel, 'basic_qos'], $this->getBasicQosArgs($exchange, $queue));
 
-        while(count($this->channel->callbacks)) {
+        while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
 

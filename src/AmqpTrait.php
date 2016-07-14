@@ -24,30 +24,27 @@ use Yii;
 trait AmqpTrait
 {
     /**
-     * @var Amqp
-     */
-    protected $amqpContainer;
-
-    /**
      * Listened exchange.
      *
      * @var string
      */
     public $exchange = 'exchange';
-
     /**
      * bind queue.
      *
      * @var string
      */
     public $queue = '';
-
     /**
      * break listen
      *
      * @var boolean
      */
     public $break = false;
+    /**
+     * @var Amqp
+     */
+    protected $amqpContainer;
 
     /**
      * Returns AMQP object.

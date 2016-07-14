@@ -37,17 +37,6 @@ abstract class InterpreterAction extends Object
     }
 
     /**
-     * Returns parameter from message by parameter name
-     * @param mixed $parameterName
-     * @param mixed|null $default
-     * @return mixed
-     */
-    protected function getMsgParameter($parameterName, $default = null)
-    {
-        return ArrayHelper::getValue($this->interpreter->getBody(), $parameterName, $default);
-    }
-
-    /**
      * Executes queue task
      */
     abstract public function run();
@@ -58,5 +47,16 @@ abstract class InterpreterAction extends Object
     public function getInterpreter(): Interpreter
     {
         return $this->_interpreter;
+    }
+
+    /**
+     * Returns parameter from message by parameter name
+     * @param mixed $parameterName
+     * @param mixed|null $default
+     * @return mixed
+     */
+    protected function getMsgParameter($parameterName, $default = null)
+    {
+        return ArrayHelper::getValue($this->interpreter->getBody(), $parameterName, $default);
     }
 }
