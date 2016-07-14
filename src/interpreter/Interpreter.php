@@ -5,7 +5,7 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\components;
+namespace tkanstantsin\yii2\amqp\interpreter;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
@@ -21,7 +21,7 @@ use yii\helpers\Inflector;
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
  * @since 2.0
  */
-class AmqpInterpreter extends Object
+class Interpreter extends Object
 {
     const MESSAGE_INFO = 0;
     const MESSAGE_ERROR = 1;

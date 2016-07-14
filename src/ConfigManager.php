@@ -5,7 +5,7 @@
  * @license https://github.com/t-kanstantsin/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\components;
+namespace tkanstantsin\yii2\amqp;
 
 /**
  * Class ConfigManager contains default function args values

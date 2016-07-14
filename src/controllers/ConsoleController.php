@@ -5,9 +5,9 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\controllers;
+namespace tkanstantsin\yii2\amqp\controllers;
 
-use tkanstantsin\amqp\components\AmqpTrait;
+use tkanstantsin\yii2\amqp\AmqpTrait;
 use webtoucher\commands\Controller;
 
 
@@ -17,7 +17,7 @@ use webtoucher\commands\Controller;
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
  * @since 2.0
  */
-abstract class AmqpConsoleController extends Controller
+abstract class ConsoleController extends Controller
 {
     use AmqpTrait;
 

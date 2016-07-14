@@ -5,10 +5,10 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\controllers;
+namespace tkanstantsin\yii2\amqp\controllers;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use tkanstantsin\amqp\components\AmqpInterpreter;
+use tkanstantsin\yii2\amqp\interpreter\Interpreter;
 use yii\console\Exception;
 use yii\helpers\ArrayHelper;
 
@@ -19,7 +19,7 @@ use yii\helpers\ArrayHelper;
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
  * @since 2.0
  */
-class AmqpListenerController extends AmqpConsoleController
+class ListenerController extends ConsoleController
 {
     public function actionRun()
     {
@@ -46,11 +46,11 @@ class AmqpListenerController extends AmqpConsoleController
 
     /**
      * @param AMQPMessage $msg
-     * @return AmqpInterpreter
+     * @return Interpreter
      * @throws \yii\base\InvalidParamException
      * @throws Exception
      */
-    protected function createInterpreter(AMQPMessage $msg): AmqpInterpreter
+    protected function createInterpreter(AMQPMessage $msg): Interpreter
     {
         $exchangeConfig = $this->amqp->getExchangeConfig($this->exchange);
         $interpreter = ArrayHelper::getValue($exchangeConfig, 'interpreter', null);
@@ -59,7 +59,7 @@ class AmqpListenerController extends AmqpConsoleController
         if (!class_exists($interpreter)) {
             throw new Exception(sprintf("Interpreter class '%s' was not found.", $interpreter));
         }
-        if (!is_subclass_of($interpreter, AmqpInterpreter::class)) {
+        if (!is_subclass_of($interpreter, Interpreter::class)) {
             throw new Exception(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
         }
 
@@ -74,12 +74,12 @@ class AmqpListenerController extends AmqpConsoleController
      * @param $logMessage
      * @param $routingKey // TODO: check and: use or remove.
      * @param AMQPMessage $msg
-     * @param AmqpInterpreter|null $interpreter
+     * @param Interpreter|null $interpreter
      */
-    private function logError($logMessage, $routingKey, AMQPMessage $msg, AmqpInterpreter $interpreter = null)
+    private function logError($logMessage, $routingKey, AMQPMessage $msg, Interpreter $interpreter = null)
     {
-        if (!($interpreter instanceof AmqpInterpreter)) {
-            $interpreter = new AmqpInterpreter();
+        if (!($interpreter instanceof Interpreter)) {
+            $interpreter = new Interpreter();
         }
 
         // error

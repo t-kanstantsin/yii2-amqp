@@ -5,10 +5,10 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\controllers;
+namespace tkanstantsin\yii2\amqp\controllers;
 
 use yii\web\Controller;
-use tkanstantsin\amqp\components\AmqpTrait;
+use tkanstantsin\yii2\amqp\AmqpTrait;
 
 
 /**
@@ -17,7 +17,7 @@ use tkanstantsin\amqp\components\AmqpTrait;
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
  * @since 2.0
  */
-abstract class AmqpWebController extends Controller
+abstract class WebController extends Controller
 {
     use AmqpTrait;
 }

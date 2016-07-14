@@ -5,7 +5,7 @@
  * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\components;
+namespace tkanstantsin\yii2\amqp;
 
 use yii\helpers\ArrayHelper;
 use PhpAmqpLib\Channel\AMQPChannel;

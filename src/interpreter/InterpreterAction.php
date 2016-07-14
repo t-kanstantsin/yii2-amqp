@@ -5,7 +5,7 @@
  * @license https://github.com/t-kanstantsin/yii2-amqp/blob/master/LICENSE.md
  */
 
-namespace tkanstantsin\amqp\components;
+namespace tkanstantsin\yii2\amqp\interpreter;
 
 use yii\base\Object;
 use yii\helpers\ArrayHelper;
@@ -16,16 +16,16 @@ use yii\helpers\ArrayHelper;
 abstract class InterpreterAction extends Object
 {
     /**
-     * @var AmqpInterpreter
+     * @var Interpreter
      */
     public $interpreter;
 
     /**
      * InterpreterAction constructor.
-     * @param AmqpInterpreter $interpreter
+     * @param Interpreter $interpreter
      * @param array $config
      */
-    public function __construct(AmqpInterpreter $interpreter, $config = [])
+    public function __construct(Interpreter $interpreter, $config = [])
     {
         $this->interpreter = $interpreter;
 
