@@ -8,7 +8,7 @@
 namespace tkanstantsin\yii2\amqp\controllers;
 
 use tkanstantsin\yii2\amqp\AmqpTrait;
-use webtoucher\commands\Controller;
+use yii\console\Controller;
 
 
 /**

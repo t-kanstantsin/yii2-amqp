@@ -7,8 +7,8 @@
 
 namespace tkanstantsin\yii2\amqp\controllers;
 
-use yii\web\Controller;
 use tkanstantsin\yii2\amqp\AmqpTrait;
+use yii\web\Controller;
 
 
 /**
