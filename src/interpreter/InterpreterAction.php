@@ -13,6 +13,8 @@ use yii\helpers\ArrayHelper;
 /**
  * Class InterpreterAction runs queue's business logic
  *
+ * @property Interpreter $interpreter
+ *
  * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  */
 abstract class InterpreterAction extends Object
@@ -20,7 +22,7 @@ abstract class InterpreterAction extends Object
     /**
      * @var Interpreter
      */
-    public $interpreter;
+    private $_interpreter;
 
     /**
      * InterpreterAction constructor.
@@ -29,7 +31,7 @@ abstract class InterpreterAction extends Object
      */
     public function __construct(Interpreter $interpreter, $config = [])
     {
-        $this->interpreter = $interpreter;
+        $this->_interpreter = $interpreter;
 
         parent::__construct($config);
     }
@@ -49,4 +51,12 @@ abstract class InterpreterAction extends Object
      * Executes queue task
      */
     abstract public function run();
+
+    /**
+     * @return Interpreter
+     */
+    public function getInterpreter(): Interpreter
+    {
+        return $this->_interpreter;
+    }
 }
