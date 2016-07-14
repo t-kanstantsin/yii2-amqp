@@ -14,7 +14,6 @@ use yii\base\Component;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
-use yii\helpers\Json;
 
 
 /**
@@ -168,11 +167,11 @@ class Amqp extends Component
         $properties = [];
         $this->applyPropertyHeaders($properties, $headers);
 
-        call_user_func_array([$this->channel, 'exchange_declare'], $this->getExchangeDeclareArgs($exchange));
+        call_user_func_array([$this->channel, 'exchange_declare'], ConfigHelper::getExchangeDeclareArgs($this->config, $exchange));
 
         foreach ($messageArray as $message) {
             $message = MessageHelper::prepareMessage($message, $properties);
-            call_user_func_array([$this->channel, 'batch_basic_publish'], $this->getPublishArgs($message, $exchange, $routingKey, $publishArgs));
+            call_user_func_array([$this->channel, 'batch_basic_publish'], ConfigHelper::getPublishArgs($message, $exchange, $routingKey, $publishArgs));
         }
         $this->channel->publish_batch();
     }
@@ -225,11 +224,11 @@ class Amqp extends Component
      */
     public function listen($exchange, $routingKey, callable $callback)
     {
-        call_user_func_array([$this->channel, 'exchange_declare'], $this->getExchangeDeclareArgs($exchange));
-        list($queue) = call_user_func_array([$this->channel, 'queue_declare'], $this->getQueueDeclareArgs($exchange, $routingKey));
-        call_user_func_array([$this->channel, 'queue_bind'], $this->getQueueBindArgs($exchange, $queue, $routingKey));
-        call_user_func_array([$this->channel, 'basic_consume'], $this->getBasicConsumeArgs($exchange, $queue, $callback));
-        call_user_func_array([$this->channel, 'basic_qos'], $this->getBasicQosArgs($exchange, $queue));
+        call_user_func_array([$this->channel, 'exchange_declare'], ConfigHelper::getExchangeDeclareArgs($this->config, $exchange));
+        list($queue) = call_user_func_array([$this->channel, 'queue_declare'], ConfigHelper::getQueueDeclareArgs($this->config, $exchange, $routingKey));
+        call_user_func_array([$this->channel, 'queue_bind'], ConfigHelper::getQueueBindArgs($this->config, $exchange, $queue, $routingKey));
+        call_user_func_array([$this->channel, 'basic_consume'], ConfigHelper::getBasicConsumeArgs($this->config, $exchange, $queue, $callback));
+        call_user_func_array([$this->channel, 'basic_qos'], ConfigHelper::getBasicQosArgs($this->config, $exchange, $queue));
 
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
@@ -282,101 +281,6 @@ class Amqp extends Component
     public function getExchangeConfig(string $exchange): array
     {
         return ArrayHelper::getValue($this->config, $exchange, []);
-    }
-
-    /**
-     * @param string $exchange
-     * @return array
-     */
-    public function getExchangeDeclareArgs(string $exchange): array
-    {
-        $config = ArrayHelper::getValue($this->config, [$exchange, 'exchange-config'], []);
-        $config = array_replace(ConfigManager::$defaultExchangeArgs, $config);
-        $config['exchange'] = $exchange;
-
-        return array_values($config);
-    }
-
-    /**
-     * @param string $exchange
-     * @param string $queue
-     * @return array
-     */
-    public function getQueueDeclareArgs(string $exchange, string $queue): array
-    {
-        // TODO: take in account that routing key might be different from queue name.
-        $config = ArrayHelper::getValue($this->config, [$exchange, 'queue-array', $queue, 'queue-config'], []);
-        $config = array_replace(ConfigManager::$defaultQueueArgs, $config);
-        $config['queue'] = $queue;
-
-        return array_values($config);
-    }
-
-    /**
-     * @param string $exchange
-     * @param string $queue
-     * @param string $routingKey
-     * @return array
-     */
-    public function getQueueBindArgs(string $exchange, string $queue, string $routingKey): array
-    {
-        // TODO: take in account that routing key might be different from queue name.
-        $config = ArrayHelper::getValue($this->config, [$exchange, 'queue-array', $queue, 'queue-bind-config'], []);
-        $config = array_replace(ConfigManager::$defaultQueueBindArgs, $config);
-        $config['exchange'] = $exchange;
-        $config['queue'] = $queue;
-        $config['routing_key'] = $routingKey;
-
-        return array_values($config);
-    }
-
-    /**
-     * @param string $exchange
-     * @param string $queue
-     * @param callable|null $callback
-     * @return array
-     */
-    public function getBasicConsumeArgs(string $exchange, string $queue, callable $callback = null): array
-    {
-        $config = ArrayHelper::getValue($this->config, [$exchange, 'queue-array', $queue, 'basic-consumer-config'], []);
-        $config = array_replace(ConfigManager::$defaultBasicConsumeArgs, $config);
-        $config['queue'] = $queue;
-
-        if ($callback !== null) {
-            $config['callback'] = $callback;
-        }
-
-        return array_values($config);
-    }
-
-    /**
-     * @param string $exchange
-     * @param string $queue
-     * @return array
-     */
-    public function getBasicQosArgs(string $exchange, string $queue): array
-    {
-        $config = ArrayHelper::getValue($this->config, [$exchange, 'queue-array', $queue, 'basic-qos-config'], []);
-        $config = array_replace(ConfigManager::$defaultBasicConsumeArgs, $config);
-        $config['queue'] = $queue;
-
-        return array_values($config);
-    }
-
-    /**
-     * @param $message
-     * @param string $exchange
-     * @param string $routingKey
-     * @param array $publishArgs
-     * @return array
-     */
-    public function getPublishArgs($message, string $exchange, string $routingKey, array $publishArgs = []): array
-    {
-        return array_values(array_replace(ConfigManager::$defaultPublishArgs, $publishArgs, [
-            'msg' => $message,
-            'exchange' => $exchange,
-            'routing_key' => $routingKey,
-        ]));
     }
 
     /**
