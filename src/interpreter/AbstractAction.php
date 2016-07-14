@@ -17,7 +17,7 @@ use yii\helpers\ArrayHelper;
  *
  * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  */
-abstract class InterpreterAction extends Object
+abstract class AbstractAction extends Object
 {
     /**
      * @var Interpreter

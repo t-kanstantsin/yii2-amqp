@@ -10,7 +10,6 @@ namespace tkanstantsin\yii2\amqp\interpreter;
 use PhpAmqpLib\Message\AMQPMessage;
 use yii\base\Object;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Console;
 use yii\helpers\Inflector;
 use yii\helpers\Json;
 
@@ -75,7 +74,7 @@ class Interpreter extends Object
     /**
      * Creates an action based on the given action ID.
      * @param string $id the action ID.
-     * @return InterpreterAction
+     * @return AbstractAction
      * @throws \yii\base\InvalidParamException
      */
     public function createAction($id)
