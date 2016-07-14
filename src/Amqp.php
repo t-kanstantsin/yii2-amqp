@@ -171,7 +171,7 @@ class Amqp extends Component
         call_user_func_array([$this->channel, 'exchange_declare'], $this->getExchangeDeclareArgs($exchange));
 
         foreach ($messageArray as $message) {
-            $message = $this->prepareMessage($message, $properties);
+            $message = MessageHelper::prepareMessage($message, $properties);
             call_user_func_array([$this->channel, 'batch_basic_publish'], $this->getPublishArgs($message, $exchange, $routingKey, $publishArgs));
         }
         $this->channel->publish_batch();
@@ -194,7 +194,7 @@ class Amqp extends Component
     public function ack($exchange, $routingKey, $message, $timeout)
     {
         list ($queueName) = $this->channel->queue_declare('', false, false, true, false);
-        $message = $this->prepareMessage($message, [
+        $message = MessageHelper::prepareMessage($message, [
             'reply_to' => $queueName,
         ]);
         // queue name must be used for answer's routing key
@@ -260,27 +260,6 @@ class Amqp extends Component
 
         $this->channel->close();
         $this->connection->close();
-    }
-
-    /**
-     * Returns prepared AMQP message.
-     *
-     * @param string|array|object $message
-     * @param array $properties
-     * @return AMQPMessage
-     * @throws Exception If message is empty.
-     */
-    public function prepareMessage($message, $properties = null)
-    {
-        if ($message === null || $message === '') {
-            throw new Exception('AMQP message can not be empty');
-        }
-
-        if (is_array($message) || is_object($message)) {
-            $message = Json::encode($message);
-        }
-
-        return new AMQPMessage($message, $properties);
     }
 
     /**
