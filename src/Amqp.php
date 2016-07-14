@@ -21,7 +21,9 @@ use yii\helpers\Json;
  *
  * @property AMQPStreamConnection $connection AMQP connection.
  * @property AMQPChannel $channel AMQP channel.
+ *
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
+ * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  * @since 2.0
  */
 class Amqp extends Component

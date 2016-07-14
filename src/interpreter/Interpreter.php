@@ -17,8 +17,12 @@ use yii\helpers\Inflector;
 
 /**
  * AMQP interpreter class.
+ * Class represent functionality to serve an exchange with multiple queues.
+ * Queues can be hold by special named method (with "action" prefix)
+ * or by separated instance of [[tkanstantsin\yii2\amqp\interpreterInterpreterAction]].
  *
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
+ * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  * @since 2.0
  */
 class Interpreter extends Object
@@ -31,6 +35,12 @@ class Interpreter extends Object
      */
     public $msg;
 
+    /**
+     * Override add an attempt to call method or action that serve incoming request
+     * @param string $name
+     * @param array $params
+     * @return mixed
+     */
     public function __call($name, $params)
     {
         $action = $this->createAction($name);
@@ -47,6 +57,7 @@ class Interpreter extends Object
     }
 
     /**
+     * List of available actions
      * @return array
      */
     public function actions(): array
@@ -55,6 +66,7 @@ class Interpreter extends Object
     }
 
     /**
+     * Whether interpreter has method or action associated with passed name
      * @inheritdoc
      */
     public function hasMethod($name)
@@ -80,6 +92,7 @@ class Interpreter extends Object
     }
 
     /**
+     * Whether interpreter has an action
      * @param string $action
      * @return bool
      */
@@ -89,6 +102,7 @@ class Interpreter extends Object
     }
 
     /**
+     * Tries to parse body from json. If fails returns body string.
      * @return mixed|string
      */
     public function getBody()
@@ -136,6 +150,7 @@ class Interpreter extends Object
     }
 
     /**
+     * Get reply_to from message. Null otherwise.
      * @return mixed|\PhpAmqpLib\Channel\AMQPChannel|null
      * @throws \OutOfBoundsException
      */

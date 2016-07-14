@@ -12,6 +12,8 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Class InterpreterAction runs queue's business logic
+ *
+ * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  */
 abstract class InterpreterAction extends Object
 {

@@ -9,6 +9,8 @@ namespace tkanstantsin\yii2\amqp;
 
 /**
  * Class ConfigManager contains default function args values
+ *
+ * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  */
 class ConfigManager
 {

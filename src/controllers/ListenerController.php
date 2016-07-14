@@ -17,6 +17,7 @@ use yii\helpers\ArrayHelper;
  * AMQP listener controller.
  *
  * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
+ * @author Kanstantsin Tsimashenka <t.kanstantsin@gmail.com>
  * @since 2.0
  */
 class ListenerController extends ConsoleController
