@@ -262,16 +262,29 @@ class Amqp extends Component
     }
 
     /**
-     * Applies headers in message properties.
-     *
-     * @param $properties
-     * @param $headers
+     * @param string $exchange
+     * @param AMQPMessage $msg
+     * @return interpreter\Interpreter
+     * @throws \ErrorException
      */
-    public function applyPropertyHeaders(&$properties, $headers)
+    public function buildInterpreter(string $exchange, AMQPMessage $msg): interpreter\Interpreter
     {
-        if ($headers !== null) {
-            $properties['application_headers'] = $headers;
+        $exchangeConfig = $this->getExchangeConfig($exchange);
+        $interpreter = ArrayHelper::getValue($exchangeConfig, 'interpreter', null);
+
+        // TODO: log errors.
+        if (!class_exists($interpreter)) {
+            throw new \ErrorException(sprintf("Interpreter class '%s' was not found.", $interpreter));
         }
+        if (!is_subclass_of($interpreter, interpreter\Interpreter::class)) {
+            throw new \ErrorException(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
+        }
+
+        $interpreter = new $interpreter([
+            'msg' => $msg,
+        ]);
+
+        return $interpreter;
     }
 
     /**
@@ -292,5 +305,18 @@ class Amqp extends Component
     {
         $format = [$type === self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
         Console::stdout(Console::ansiFormat($message . PHP_EOL, $format));
+    }
+
+    /**
+     * Applies headers in message properties.
+     *
+     * @param $properties
+     * @param $headers
+     */
+    protected function applyPropertyHeaders(&$properties, $headers)
+    {
+        if ($headers !== null) {
+            $properties['application_headers'] = $headers;
+        }
     }
 }

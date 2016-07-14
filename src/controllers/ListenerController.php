@@ -59,7 +59,7 @@ class ListenerController extends ConsoleController
      */
     public function callback(AMQPMessage $msg)
     {
-        $interpreter = $this->createInterpreter($msg);
+        $interpreter = $this->amqp->buildInterpreter($this->exchange, $msg);
         $action = $msg->get('routing_key');
 
         if ($interpreter->hasMethod($action)) {
@@ -67,32 +67,6 @@ class ListenerController extends ConsoleController
         } else {
             $this->logError(sprintf("Unknown routing key '%s' for exchange '%s'.", $action, $this->exchange), $action, $msg);
         }
-    }
-
-    /**
-     * @param AMQPMessage $msg
-     * @return Interpreter
-     * @throws \yii\base\InvalidParamException
-     * @throws Exception
-     */
-    protected function createInterpreter(AMQPMessage $msg): Interpreter
-    {
-        $exchangeConfig = $this->amqp->getExchangeConfig($this->exchange);
-        $interpreter = ArrayHelper::getValue($exchangeConfig, 'interpreter', null);
-
-        // TODO: log errors.
-        if (!class_exists($interpreter)) {
-            throw new Exception(sprintf("Interpreter class '%s' was not found.", $interpreter));
-        }
-        if (!is_subclass_of($interpreter, Interpreter::class)) {
-            throw new Exception(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
-        }
-
-        $interpreter = new $interpreter([
-            'msg' => $msg,
-        ]);
-
-        return $interpreter;
     }
 
     /**
@@ -105,7 +79,6 @@ class ListenerController extends ConsoleController
     {
         // error
         $this->amqp->log($logMessage, Amqp::MESSAGE_ERROR);
-
         // debug the message
         $this->amqp->log(print_r($msg->body, true), Amqp::MESSAGE_INFO);
     }
