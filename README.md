@@ -41,6 +41,7 @@ return [
     'controllerMap' => [
         'rabbit' => [
             'class' => tkanstantsin\yii2\amqp\controllers\ListenerController::class,
+            'amqp' => 'amqp',
             'interpreters' => [
                 'my-exchange' => app\components\RabbitInterpreter::class, // interpreters for each exchange
             ],

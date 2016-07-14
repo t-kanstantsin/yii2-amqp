@@ -27,9 +27,6 @@ use yii\helpers\Json;
  */
 class Interpreter extends Object
 {
-    const MESSAGE_INFO = 0;
-    const MESSAGE_ERROR = 1;
-
     /**
      * @var AMQPMessage
      */
@@ -114,18 +111,6 @@ class Interpreter extends Object
         }
 
         return $body;
-    }
-
-    /**
-     * Logs info and error messages.
-     *
-     * @param $message
-     * @param int $type
-     */
-    public function log($message, int $type = self::MESSAGE_INFO)
-    {
-        $format = [$type === self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
-        Console::stdout(Console::ansiFormat($message . PHP_EOL, $format));
     }
 
     /**

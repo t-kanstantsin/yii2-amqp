@@ -8,7 +8,9 @@
 namespace tkanstantsin\yii2\amqp\controllers;
 
 use PhpAmqpLib\Message\AMQPMessage;
+use tkanstantsin\yii2\amqp\Amqp;
 use tkanstantsin\yii2\amqp\interpreter\Interpreter;
+use yii\base\InvalidConfigException;
 use yii\console\Exception;
 use yii\helpers\ArrayHelper;
 
@@ -22,6 +24,28 @@ use yii\helpers\ArrayHelper;
  */
 class ListenerController extends ConsoleController
 {
+    /**
+     * Amqp component
+     * @var Amqp|string
+     */
+    public $amqp = 'amqp';
+
+    /**
+     * @inheritdoc
+     * @throws InvalidConfigException
+     */
+    public function init()
+    {
+        parent::init();
+
+        if (is_string($this->amqp)) {
+            $this->amqp = \Yii::$app->get($this->amqp);
+        }
+        if (!($this->amqp instanceof Amqp)) {
+            throw new InvalidConfigException(sprintf('Amqp component MUST be defined and be instance of "%s".', Amqp::class));
+        }
+    }
+
     public function actionRun()
     {
         $this->amqp->listen($this->exchange, $this->queue, [$this, 'callback']);
@@ -41,7 +65,7 @@ class ListenerController extends ConsoleController
         if ($interpreter->hasMethod($action)) {
             $interpreter->$action();
         } else {
-            $this->logError(sprintf("Unknown routing key '%s' for exchange '%s'.", $action, $this->exchange), $action, $msg, $interpreter);
+            $this->logError(sprintf("Unknown routing key '%s' for exchange '%s'.", $action, $this->exchange), $action, $msg);
         }
     }
 
@@ -77,16 +101,12 @@ class ListenerController extends ConsoleController
      * @param AMQPMessage $msg
      * @param Interpreter|null $interpreter
      */
-    private function logError($logMessage, $routingKey, AMQPMessage $msg, Interpreter $interpreter = null)
+    private function logError($logMessage, $routingKey, AMQPMessage $msg)
     {
-        if (!($interpreter instanceof Interpreter)) {
-            $interpreter = new Interpreter();
-        }
-
         // error
-        $interpreter->log($logMessage, $interpreter::MESSAGE_ERROR);
+        $this->amqp->log($logMessage, Amqp::MESSAGE_ERROR);
 
         // debug the message
-        $interpreter->log(print_r($msg->body, true), $interpreter::MESSAGE_INFO);
+        $this->amqp->log(print_r($msg->body, true), Amqp::MESSAGE_INFO);
     }
 }

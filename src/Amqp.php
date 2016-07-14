@@ -13,6 +13,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use yii\base\Component;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
 use yii\helpers\Json;
 
 
@@ -28,10 +29,14 @@ use yii\helpers\Json;
  */
 class Amqp extends Component
 {
+    // topic types
     const TYPE_TOPIC = 'topic';
     const TYPE_DIRECT = 'direct';
     const TYPE_HEADERS = 'headers';
     const TYPE_FANOUT = 'fanout';
+    // log message types
+    const MESSAGE_INFO = 0;
+    const MESSAGE_ERROR = 1;
 
     /**
      * @var AMQPStreamConnection
@@ -393,5 +398,16 @@ class Amqp extends Component
             'exchange' => $exchange,
             'routing_key' => $routingKey,
         ]));
+    }
+
+    /**
+     * Logs info and error messages.
+     * @param $message
+     * @param int $type
+     */
+    public function log($message, int $type = self::MESSAGE_INFO)
+    {
+        $format = [$type === self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
+        Console::stdout(Console::ansiFormat($message . PHP_EOL, $format));
     }
 }
