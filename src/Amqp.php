@@ -34,9 +34,6 @@ class Amqp extends Component
     const TYPE_DIRECT = 'direct';
     const TYPE_HEADERS = 'headers';
     const TYPE_FANOUT = 'fanout';
-    // log message types
-    const MESSAGE_INFO = 0;
-    const MESSAGE_ERROR = 1;
 
     /**
      * @var AMQPStreamConnection
