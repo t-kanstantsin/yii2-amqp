@@ -14,6 +14,7 @@ use yii\base\Component;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
+use yii\log\Logger;
 
 
 /**
@@ -86,6 +87,18 @@ class Amqp extends Component
      * @var array
      */
     public $config;
+    /**
+     * @var string
+     */
+    public $logComponent;
+    /**
+     * @var string
+     */
+    public $logCategory;
+    /**
+     * @var \yii\log\Logger
+     */
+    private $_log;
 
     /**
      * @var AMQPChannel[]
@@ -109,6 +122,9 @@ class Amqp extends Component
                 $this->password,
                 $this->vhost
             );
+        }
+        if (mb_strlen($this->log) !== 0) {
+            $this->_log = \Yii::$app->{$this->logComponent};
         }
     }
 
@@ -297,14 +313,23 @@ class Amqp extends Component
     }
 
     /**
-     * Logs info and error messages.
      * @param $message
-     * @param int $type
+     * @param $level
+     * @param $category
      */
-    public function log($message, int $type = self::MESSAGE_INFO)
+    public function log(string $message, $level, string $category = null)
     {
-        $format = [$type === self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
-        Console::stdout(Console::ansiFormat($message . PHP_EOL, $format));
+        if (!($this->_log instanceof Logger)) {
+            return;
+        }
+
+        if ($category === null) {
+            $category = $this->logCategory;
+        } elseif ($category === false) {
+            $category = 'application'; // default value from yii logger.
+        }
+
+        $this->_log->log($message, $level, $category);
     }
 
     /**

@@ -12,6 +12,7 @@ use tkanstantsin\yii2\amqp\Amqp;
 use tkanstantsin\yii2\amqp\interpreter\Interpreter;
 use yii\base\InvalidConfigException;
 use yii\console\Controller;
+use yii\log\Logger;
 
 
 /**
@@ -107,8 +108,8 @@ class ListenerController extends Controller
     private function logError($logMessage, $routingKey, AMQPMessage $msg)
     {
         // error
-        $this->amqp->log($logMessage, Amqp::MESSAGE_ERROR);
+        $this->amqp->log($logMessage, Logger::LEVEL_ERROR);
         // debug the message
-        $this->amqp->log(print_r($msg->body, true), Amqp::MESSAGE_INFO);
+        $this->amqp->log(print_r($msg->body, true), Logger::LEVEL_INFO);
     }
 }
