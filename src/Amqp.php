@@ -13,7 +13,6 @@ use PhpAmqpLib\Message\AMQPMessage;
 use yii\base\Component;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Console;
 use yii\log\Logger;
 
 
@@ -92,15 +91,16 @@ class Amqp extends Component
      * @var string
      */
     public $logCategory;
-    /**
-     * @var \yii\log\Logger
-     */
-    private $_log;
 
     /**
      * @var AMQPChannel[]
      */
     protected $channels = [];
+
+    /**
+     * @var \yii\log\Logger
+     */
+    private $_log;
 
     /**
      * @inheritdoc
@@ -120,7 +120,7 @@ class Amqp extends Component
                 $this->vhost
             );
         }
-        if (mb_strlen($this->log) !== 0) {
+        if (mb_strlen($this->logComponent) !== 0) {
             $this->_log = \Yii::$app->{$this->logComponent};
         }
     }
