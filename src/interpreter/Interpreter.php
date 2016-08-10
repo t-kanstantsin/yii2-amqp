@@ -8,6 +8,7 @@
 namespace tkanstantsin\yii2\amqp\interpreter;
 
 use PhpAmqpLib\Message\AMQPMessage;
+use tkanstantsin\yii2\amqp\Amqp;
 use yii\base\Object;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
@@ -30,6 +31,21 @@ class Interpreter extends Object
      * @var AMQPMessage
      */
     public $msg;
+    /**
+     * @var Amqp
+     */
+    public $amqp;
+
+    /**
+     * Interpreter constructor.
+     * @param Amqp $amqp
+     * @param array $config
+     */
+    public function __construct(Amqp $amqp, $config = [])
+    {
+        $this->amqp = $amqp;
+        parent::__construct($config);
+    }
 
     /**
      * Override add an attempt to call method or action that serve incoming request

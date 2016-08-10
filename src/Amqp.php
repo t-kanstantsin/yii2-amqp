@@ -293,7 +293,7 @@ class Amqp extends Component
             throw new \ErrorException(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
         }
 
-        $interpreter = new $interpreter([
+        $interpreter = new $interpreter($this, [
             'msg' => $msg,
         ]);
 
