@@ -293,8 +293,14 @@ class Amqp extends Component
             throw new \ErrorException(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
         }
 
+        $actions = array_map(function (array $queueConfig) {
+            return ArrayHelper::getValue($queueConfig, 'action');
+        }, $exchangeConfig['queue-array']);
+        $actions = array_filter($actions);
+
         $interpreter = new $interpreter($this, [
             'msg' => $msg,
+            'actions' => $actions,
         ]);
 
         return $interpreter;

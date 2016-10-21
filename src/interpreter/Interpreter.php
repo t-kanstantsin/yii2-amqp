@@ -37,6 +37,11 @@ class Interpreter extends Object
     public $amqp;
 
     /**
+     * @var array
+     */
+    private $_actions;
+
+    /**
      * Interpreter constructor.
      * @param Amqp $amqp
      * @param array $config
@@ -44,6 +49,7 @@ class Interpreter extends Object
     public function __construct(Amqp $amqp, $config = [])
     {
         $this->amqp = $amqp;
+        $this->_actions = ArrayHelper::remove($config, 'actions', []);
         parent::__construct($config);
     }
 
@@ -74,7 +80,7 @@ class Interpreter extends Object
      */
     public function actions(): array
     {
-        return [];
+        return $this->_actions;
     }
 
     /**
