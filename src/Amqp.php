@@ -283,14 +283,11 @@ class Amqp extends Component
     public function buildInterpreter(string $exchange, AMQPMessage $msg): interpreter\Interpreter
     {
         $exchangeConfig = $this->getExchangeConfig($exchange);
-        $interpreter = ArrayHelper::getValue($exchangeConfig, 'interpreter', null);
+        $interpreter = ArrayHelper::getValue($exchangeConfig, 'interpreter', interpreter\Interpreter::class);
 
         // TODO: log errors.
         if (!class_exists($interpreter)) {
             throw new \ErrorException(sprintf("Interpreter class '%s' was not found.", $interpreter));
-        }
-        if (!is_subclass_of($interpreter, interpreter\Interpreter::class)) {
-            throw new \ErrorException(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
         }
 
         $actions = array_map(function (array $queueConfig) {
@@ -302,6 +299,10 @@ class Amqp extends Component
             'msg' => $msg,
             'actions' => $actions,
         ]);
+
+        if (!($interpreter instanceof interpreter\Interpreter)) {
+            throw new \ErrorException(sprintf("Class '%s' is not correct interpreter class.", $interpreter));
+        }
 
         return $interpreter;
     }
